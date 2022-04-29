@@ -1,7 +1,8 @@
 // DEPENDENCIES
 const cors = require("cors");
 const express = require("express");
-const userController = require("./controllers/userController");
+const usersController = require("./controllers/usersController");
+const cardsController = require("./controllers/cardsController");
 
 // CONFIGURATION
 const app = express();
@@ -15,7 +16,8 @@ app.get("/", (req, res) => {
     res.send("Welcome to Goal List App");
 });
 
-app.use("/user", userController);
+app.use("/users", usersController);
+app.use("/cards", cardsController);
 
 // 404 Page
 app.get("*", (req, res) => {
