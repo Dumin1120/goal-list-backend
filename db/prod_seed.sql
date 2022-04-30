@@ -1,22 +1,22 @@
 INSERT INTO users
 ( uid, name, dark_mode )
 VALUES
-( 'abcdefgh', 'Guest', false );
+( 'ddddffff', 'Guest', false );
 
 INSERT INTO goal_cards
 ( uid, card_name )
 VALUES
-( 'abcdefgh', 'New Goal'),
-( 'abcdefgh', 'Goal 2'),
-( 'abcdefgh', 'Another');
+( 'ddddffff', 'New Goal'),
+( 'ddddffff', 'Goal 2'),
+( 'ddddffff', 'Another');
 
 INSERT INTO todo_lists
-( todo, card_id )
+( uid, to_do, card_id )
 VALUES
-( 'Finish question 1', 1),
-( 'Finish question 2', 1),
-( 'Finish question 3', 2),
-( 'Finish question 4', 2),
-( 'Finish question 5', 2),
-( 'Finish question 6', 3),
-( 'Finish question 7', 3);
+( 'ddddffff', 'Finish question 1', 1),
+( 'ddddffff', 'Finish question 2', 1),
+( 'ddddffff', 'Finish question 3', 2),
+( 'ddddffff', 'Finish question 4', 2),
+( 'ddddffff', 'Finish question 5', 2),
+( 'ddddffff', 'Finish question 6', 3),
+( 'ddddffff', 'Finish question 7', 3);

@@ -14,8 +14,10 @@ CREATE TABLE goal_cards (
 );
 
 DROP TABLE IF EXIST todo_lists CASCADE;
-CREATE TABLE todo_list (
+CREATE TABLE todo_lists (
     id SERIAL PRIMARY KEY,
-    todo TEXT,
-    card_id INTEGER REFERENCES goal_cards (id) ON DELETE CASCADE
+    uid TEXT,
+    to_do TEXT,
+    card_id INTEGER REFERENCES goal_cards (id)
+    ON DELETE CASCADE
 );

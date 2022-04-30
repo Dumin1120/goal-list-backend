@@ -1,8 +1,15 @@
 const db = require("../db/dbconfig");
 
-const getUserInfo = async (uid) => {
+const getUserInfo = async (user) => {
     try {
-        return await db.one("SELECT * FROM users WHERE uid=$1", uid);
+        const { uid } = user;
+        return await db.one(
+            `
+            SELECT * FROM users
+            WHERE uid=$1
+            `,
+            uid
+        );
     } catch (err) {
         return "error";
     }
@@ -42,8 +49,10 @@ const updateUserInfo = async (user) => {
         return "error";
     }
 }
-const deleteUserInfo = async (uid) => {
+
+const deleteUserInfo = async (user) => {
     try {
+        const { uid } = user;
         return await db.one(
             `
             DELETE FROM users

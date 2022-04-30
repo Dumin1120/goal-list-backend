@@ -17,9 +17,8 @@ CREATE TABLE goal_cards (
 
 CREATE TABLE todo_lists (
     id SERIAL PRIMARY KEY,
-    todo TEXT,
-    card_id INTEGER REFERENCES goal_cards (id) ON DELETE CASCADE
+    uid TEXT,
+    to_do TEXT,
+    card_id INTEGER REFERENCES goal_cards (id)
+    ON DELETE CASCADE
 );
-
---  quantity INTEGER,
---  CHECK (quantity >= 0)

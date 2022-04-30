@@ -1,26 +1,26 @@
 const db = require("../db/dbconfig");
 
-const getAllCardsInfo = async (card) => {
+const getAllTodos = async (todo) => {
     try {
-        const { uid } = card;
+        const { card_id, uid } = todo;
         return await db.any(
             `
-            SELECT * FROM goal_cards
-            WHERE uid=$1
+            SELECT * FROM todo_lists
+            WHERE card_id=$1 AND uid=$2
             `,
-            uid
+            [card_id, uid]
         )
     } catch (err) {
         return "error";
     }
 }
 
-const getCardInfo = async (card) => {
+const getOneTodo = async (todo) => {
     try {
-        const { id, uid } = card;
+        const { id, uid } = todo;
         return await db.one(
             `
-            SELECT * FROM goal_cards
+            SELECT * FROM todo_lists
             WHERE id=$1 AND uid=$2
             `,
             [id, uid]
@@ -30,47 +30,47 @@ const getCardInfo = async (card) => {
     }
 }
 
-const createCardInfo = async (card) => {
+const createTodos = async (todo) => {
     try {
-        const { uid, card_name } = card;
+        const { uid, to_do, card_id } = todo;
         return await db.one(
             `
-            INSERT INTO goal_cards
-            (uid, card_name)
+            INSERT INTO todo_lists
+            (uid, to_do, card_id)
             VALUES
-            ($1, $2)
+            ($1, $2, $3)
             RETURNING *
             `,
-            [uid, card_name]
+            [uid, to_do, card_id]
         )
     } catch (err) {
         return "error";
     }
 }
 
-const updateCardInfo = async (card) => {
+const updateTodos = async (todo) => {
     try {
-        const { id, uid, card_name } = card;
+        const { id, uid, to_do } = todo;
         return await db.one(
             `
-            UPDATE goal_cards SET
-            card_name=$1
+            UPDATE todo_lists SET
+            to_do=$1
             WHERE id=$2 AND uid=$3
             RETURNING *
             `,
-            [card_name, id, uid]
+            [to_do, id, uid]
         )
     } catch (err) {
         return "error";
     }
 }
 
-const deleteCardInfo = async (card) => {
+const deleteTodos = async (todo) => {
     try {
-        const { id, uid } = card;
+        const { id, uid } = todo;
         return await db.one(
             `
-            DELETE FROM goal_cards
+            DELETE FROM todo_lists
             WHERE id=$1 AND uid=$2
             RETURNING *
             `,
@@ -82,9 +82,9 @@ const deleteCardInfo = async (card) => {
 }
 
 module.exports = {
-    getAllCardsInfo,
-    getCardInfo,
-    createCardInfo,
-    updateCardInfo,
-    deleteCardInfo
+    getAllTodos,
+    getOneTodo,
+    createTodos,
+    updateTodos,
+    deleteTodos
 };
