@@ -2,8 +2,8 @@
 const cors = require("cors");
 const express = require("express");
 const usersController = require("./controllers/usersController");
-const cardsController = require("./controllers/cardsController");
-const todosController = require("./controllers/todosController");
+const goalCardsController = require("./controllers/goalCardsController");
+const tasksController = require("./controllers/tasksController");
 
 // CONFIGURATION
 const app = express();
@@ -18,8 +18,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", usersController);
-app.use("/cards", cardsController);
-app.use("/todos", todosController);
+app.use("/goalcards", goalCardsController);
+app.use("/tasks", tasksController);
 
 // 404 Page
 app.get("*", (req, res) => {

@@ -1,8 +1,8 @@
 const db = require("../db/dbconfig");
 
-const getUserInfo = async (user) => {
+const getUserInfo = async (userObj) => {
     try {
-        const { uid } = user;
+        const { uid } = userObj;
         return await db.one(
             `
             SELECT * FROM users
@@ -15,15 +15,15 @@ const getUserInfo = async (user) => {
     }
 }
 
-const createUserInfo = async (user) => {
+const createUserInfo = async (userObj) => {
     try {
-        const { uid, name, dark_mode } = user;
+        const { uid, name, dark_mode } = userObj;
         return await db.one(
             `
             INSERT INTO users
-            (uid, name, dark_mode)
+            ( uid, name, dark_mode )
             VALUES
-            ($1, $2, $3)
+            ( $1, $2, $3 )
             RETURNING *
             `,
             [uid, name, dark_mode]
@@ -33,9 +33,9 @@ const createUserInfo = async (user) => {
     }
 }
 
-const updateUserInfo = async (user) => {
+const updateUserInfo = async (userObj) => {
     try {
-        const { name, dark_mode, uid } = user;
+        const { name, dark_mode, uid } = userObj;
         return await db.one(
             `
             UPDATE users SET
@@ -50,9 +50,9 @@ const updateUserInfo = async (user) => {
     }
 }
 
-const deleteUserInfo = async (user) => {
+const deleteUserInfo = async (userObj) => {
     try {
-        const { uid } = user;
+        const { uid } = userObj;
         return await db.one(
             `
             DELETE FROM users

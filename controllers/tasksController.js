@@ -1,57 +1,53 @@
-const cards = require("express").Router();
-const { getAllCardsInfo, getCardInfo, createCardInfo, updateCardInfo, deleteCardInfo } = require("../queries/cards");
+const tasks = require("express").Router();
+const { getAllTasks, getOneTask, createTask, updateTasks, deleteTasks } = require("../queries/tasks");
 const { respondPayload, respondError, respondInvalidRequest } = require("../helpers/responses");
 
-cards.post("/", async (req, res) => {
+tasks.post("/", async (req, res) => {
     try {
-        const payload = req.body.id
-            ? await getCardInfo(req.body)
-            : await getAllCardsInfo(req.body);
+        const payload = typeof req.body.id === "number"
+            ? await getOneTask(req.body)
+            : await getAllTasks(req.body);
         if (payload === "error")
             throw "Invalid user id or card id";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-cards.post("/modify", async (req, res) => {
+tasks.post("/modify", async (req, res) => {
     try {
-        const payload = await createCardInfo(req.body);
+        const payload = await createTask(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-cards.put("/modify", async (req, res) => {
+tasks.put("/modify", async (req, res) => {
     try {
-        const payload = await updateCardInfo(req.body);
+        const payload = await updateTasks(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-cards.delete("/modify", async (req, res) => {
+tasks.delete("/modify", async (req, res) => {
     try {
-        const payload = await deleteCardInfo(req.body);
+        const payload = await deleteTasks(req.body);
         if (payload === "error")
-            throw "Invalid user id";
-
+            throw "Invalid data";
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-cards.use("*", respondInvalidRequest);
+tasks.use("*", respondInvalidRequest);
 
-module.exports = cards;
+module.exports = tasks;

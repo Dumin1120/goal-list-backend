@@ -1,57 +1,53 @@
-const todos = require("express").Router();
-const { getAllTodos, getOneTodo, createTodos, updateTodos, deleteTodos } = require("../queries/todos");
+const goalCards = require("express").Router();
+const { getAllCardsInfo, getCardInfo, createCardInfo, updateCardInfo, deleteCardInfo } = require("../queries/goalCards");
 const { respondPayload, respondError, respondInvalidRequest } = require("../helpers/responses");
 
-todos.post("/", async (req, res) => {
+goalCards.post("/", async (req, res) => {
     try {
-        const payload = typeof req.body.id === "number"
-            ? await getOneTodo(req.body)
-            : await getAllTodos(req.body);
+        const payload = req.body.id
+            ? await getCardInfo(req.body)
+            : await getAllCardsInfo(req.body);
         if (payload === "error")
             throw "Invalid user id or card id";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-todos.post("/modify", async (req, res) => {
+goalCards.post("/modify", async (req, res) => {
     try {
-        const payload = await createTodos(req.body);
+        const payload = await createCardInfo(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-todos.put("/modify", async (req, res) => {
+goalCards.put("/modify", async (req, res) => {
     try {
-        const payload = await updateTodos(req.body);
+        const payload = await updateCardInfo(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-todos.delete("/modify", async (req, res) => {
+goalCards.delete("/modify", async (req, res) => {
     try {
-        const payload = await deleteTodos(req.body);
+        const payload = await deleteCardInfo(req.body);
         if (payload === "error")
-            throw "Invalid data";
-
+            throw "Invalid user id";
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
     }
 });
 
-todos.use("*", respondInvalidRequest);
+goalCards.use("*", respondInvalidRequest);
 
-module.exports = todos;
+module.exports = goalCards;
