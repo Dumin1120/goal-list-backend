@@ -1,5 +1,6 @@
 const db = require("../db/dbconfig");
 const { getAllCardsQuery, getCardQuery, createCardQuery, updateCardQuery, deleteCardQuery } = require("../helpers/buildGoalCardsQueries");
+const { deleteTasks } = require("./tasks");
 
 const getAllCardsInfo = async (cardObj) => {
     try {
@@ -39,6 +40,8 @@ const updateCardInfo = async (cardObj) => {
 
 const deleteCardInfo = async (cardObj) => {
     try {
+        const { uid, id } = cardObj;
+        await deleteTasks({ uid, card_id: id }, false);
         const query = deleteCardQuery(cardObj);
         return await db.one(query.str, query.values);
     } catch (err) {

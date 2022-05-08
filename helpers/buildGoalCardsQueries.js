@@ -2,6 +2,7 @@ const getAllCardsQuery = (cardObj) => {
     const str = `
         SELECT * FROM goal_cards
         WHERE uid=$1
+        ORDER BY id ASC
         `;
     return { str, values: cardObj.uid };
 }
@@ -38,10 +39,10 @@ const updateCardQuery = (cardObj) => {
     const keyArr = [];
     const values = [];
     const keys = ["card_name", "tasks_completed", "tasks_total", "task_1", "task_1_completed", "task_2", "task_2_completed", "task_3", "task_3_completed", "task_4", "task_4_completed", "task_5", "task_5_completed"];
-    keys.forEach(k => {
-        if (cardObj.hasOwnProperty(k)) {
-            values.push(cardObj[k]);
-            keyArr.push(`${k}=$${values.length}`);
+    keys.forEach(key => {
+        if (cardObj.hasOwnProperty(key)) {
+            values.push(cardObj[key]);
+            keyArr.push(`${key}=$${values.length}`);
         }
     })
     const str = `
@@ -52,6 +53,24 @@ const updateCardQuery = (cardObj) => {
         `;
     values.push(uid, id);
     return { str, values };
+}
+
+const updateCardFromTasksQuery = (id, uid, taskArr) => {
+    let tasks_total = taskArr.length;
+    let tasks_completed = 0;
+    let cardObj = {};
+    taskArr.forEach((obj, i) => {
+        const { task, completed } = obj;
+        if (i < 5) {
+            cardObj[`task_${i + 1}`] = task;
+            cardObj[`task_${i + 1}_completed`] = completed;
+        }
+        if (completed) {
+            tasks_completed += 1;
+        }
+    })
+    cardObj = { ...cardObj, id, uid, tasks_total, tasks_completed };
+    return updateCardQuery(cardObj);
 }
 
 const deleteCardQuery = (cardObj) => {
@@ -70,5 +89,6 @@ module.exports = {
     getCardQuery,
     createCardQuery,
     updateCardQuery,
+    updateCardFromTasksQuery,
     deleteCardQuery
 };

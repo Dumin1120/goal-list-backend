@@ -7,7 +7,6 @@ users.post("/", async (req, res) => {
         const payload = await getUserInfo(req.body);
         if (payload === "error")
             throw "Invalid user id";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
@@ -19,7 +18,6 @@ users.post("/modify", async (req, res) => {
         const payload = await createUserInfo(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
@@ -31,7 +29,6 @@ users.put("/modify", async (req, res) => {
         const payload = await updateUserInfo(req.body);
         if (payload === "error")
             throw "Invalid data";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
@@ -43,7 +40,6 @@ users.delete("/modify", async (req, res) => {
         const payload = await deleteUserInfo(req.body);
         if (payload === "error")
             throw "Invalid user id";
-
         res.status(200).json(respondPayload(payload));
     } catch (err) {
         res.status(400).json(respondError(err));
