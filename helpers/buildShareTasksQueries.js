@@ -1,28 +1,18 @@
 const tasksColumnsStr = "id, task, completed, position, share, share_edit, share_key, card_name, card_id";
 
-const getAllTasksQuery = (taskObj) => {
-    const { uid, card_id } = taskObj;
+const getShareTasksQuery = (taskObj) => {
+    const { share_key } = taskObj;
     const str = `
         SELECT ${tasksColumnsStr} FROM tasks
-        WHERE uid=$1 AND card_id=$2
+        WHERE share=TRUE AND share_key=$1
         ORDER BY position ASC
         `;
-    const values = [uid, card_id];
+    const values = share_key;
     return { str, values };
 }
 
-const getOneTaskQuery = (taskObj) => {
-    const { uid, id } = taskObj;
-    const str = `
-        SELECT ${tasksColumnsStr} FROM tasks
-        WHERE uid=$1 AND id=$2
-        `;
-    const values = [uid, id];
-    return { str, values };
-}
-
-const createTaskQuery = (taskObj) => {
-    const { uid, card_id, card_name, task, position, share_key } = taskObj;
+/*const createShareTaskQuery = (taskObj) => {
+    const { card_id, card_name, task, position, share_key } = taskObj;
     const str = `
         INSERT INTO tasks
         ( uid, card_id, card_name, task, position, share_key )
@@ -32,15 +22,14 @@ const createTaskQuery = (taskObj) => {
         `;
     const values = [uid, card_id, card_name, task, position, share_key];
     return { str, values };
-}
+}*/
 
-const updateTasksQuery = (taskArrOrObj) => {
+const updateShareTasksQuery = (taskArrOrObj) => {
     const keyArr = [];
     const values = [];
     let str = "";
-    const keys = tasksColumnsStr.split(", ").filter(key => key !== "share_key");
+    const keys = tasksColumnsStr.split(", ").filter(key => key !== "share" && key !== "share_edit" && key !== "card_id");
     if (Array.isArray(taskArrOrObj)) {
-        keyArr.push("uid");
         keys.forEach(key => {
             if (taskArrOrObj[0].hasOwnProperty(key)) {
                 keyArr.push(key);
@@ -52,63 +41,62 @@ const updateTasksQuery = (taskArrOrObj) => {
         let count = 0;
         str = `
             UPDATE tasks as t SET
-            ${keyArr.slice(2).map(key => `${key}=t2.${key}`).join(",")}
+            ${keyArr.filter(key => key !== "share_key" && key !== "id").map(key => `${key}=t2.${key}`).join(",")}
             FROM (
                 VALUES
                 ${Array.from({ length: values.length / keyArr.length }, () => {
             return "(" + keyArr.map(_ => `$${++count}`).join(",") + ")";
         }).join(",")}
             ) as t2 (${keyArr.join(",")})
-            WHERE t2.uid = t.uid AND t2.id = t.id
+            WHERE t2.share_key=t.share_key AND t2.id=t.id AND t.share=TRUE AND t.share_edit=TRUE
             RETURNING ${tasksColumnsStr}
             `;
         return { str, values };
     }
-    const { uid, id } = taskArrOrObj;
-    keys.slice(1).forEach(key => {
-        if (taskArrOrObj.hasOwnProperty(key)) {
-            values.push(taskArrOrObj[key]);
-            keyArr.push(`${key}=$${values.length}`);
-        }
-    })
+    const { share_key, id } = taskArrOrObj;
+    keys.filter(key => key !== "id" && key !== "share_key" && key !== "share" && key !== "share_edit" && key !== "card_id")
+        .forEach(key => {
+            if (taskArrOrObj.hasOwnProperty(key)) {
+                values.push(taskArrOrObj[key]);
+                keyArr.push(`${key}=$${values.length}`);
+            }
+        })
     str = `
         UPDATE tasks SET
         ${keyArr.join(",")}
-        WHERE uid=$${keyArr.length + 1} AND id=$${keyArr.length + 2}
+        WHERE share_key=$${keyArr.length + 1} AND id=$${keyArr.length + 2} AND share=TRUE AND share_edit=TRUE 
         RETURNING ${tasksColumnsStr}
         `;
-    values.push(uid, id);
+    values.push(share_key, id);
     return { str, values };
 }
 
-const updateTasksFromCardQuery = (uid, cardResObj) => {
-    const { id, card_name } = cardResObj;
+const updateShareTasksFromCardQuery = (cardResObj) => {
+    const { share_key, id, card_name } = cardResObj;
     const str = `
         UPDATE tasks SET
         card_name=$1
-        WHERE uid=$2 AND card_id=$3
+        WHERE share=TRUE AND share_key=$2 AND card_id=$3
         RETURNING ${tasksColumnsStr}
         `;
-    const values = [card_name, uid, id];
+    const values = [card_name, share_key, id];
     return { str, values };
 }
 
-const deleteTasksQuery = (taskObj) => {
-    const { id, card_id, uid } = taskObj;
+const deleteShareTaskQuery = (taskObj) => {
+    const { id, share_key, } = taskObj;
     const str = `
         DELETE FROM tasks
-        WHERE uid=$1 AND ${card_id ? "card_id" : "id"}=$2
+        WHERE share=TRUE AND share_edit=TRUE AND share_key=$1 AND id=$2
         RETURNING ${tasksColumnsStr}
         `;
-    const values = [uid, card_id || id];
+    const values = [share_key, id];
     return { str, values };
 }
 
 module.exports = {
-    getAllTasksQuery,
-    getOneTaskQuery,
-    createTaskQuery,
-    updateTasksQuery,
-    updateTasksFromCardQuery,
-    deleteTasksQuery
+    getShareTasksQuery,
+    updateShareTasksQuery,
+    updateShareTasksFromCardQuery,
+    deleteShareTaskQuery
 };

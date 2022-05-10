@@ -1,12 +1,12 @@
 const goalCards = require("express").Router();
-const { getAllCardsInfo, getCardInfo, createCardInfo, updateCardInfo, deleteCardInfo } = require("../queries/goalCards");
+const { getAllCards, getCard, createCard, updateCard, deleteCard } = require("../queries/goalCards");
 const { respondPayload, respondError, respondInvalidRequest } = require("../helpers/responses");
 
 goalCards.post("/", async (req, res) => {
     try {
         const payload = req.body.id
-            ? await getCardInfo(req.body)
-            : await getAllCardsInfo(req.body);
+            ? await getCard(req.body)
+            : await getAllCards(req.body);
         if (payload === "error")
             throw "Invalid user id or card id";
         res.status(200).json(respondPayload(payload));
@@ -17,7 +17,7 @@ goalCards.post("/", async (req, res) => {
 
 goalCards.post("/modify", async (req, res) => {
     try {
-        const payload = await createCardInfo(req.body);
+        const payload = await createCard(req.body);
         if (payload === "error")
             throw "Invalid data";
         res.status(200).json(respondPayload(payload));
@@ -28,7 +28,7 @@ goalCards.post("/modify", async (req, res) => {
 
 goalCards.put("/modify", async (req, res) => {
     try {
-        const payload = await updateCardInfo(req.body);
+        const payload = await updateCard(req.body);
         if (payload === "error")
             throw "Invalid data";
         res.status(200).json(respondPayload(payload));
@@ -39,7 +39,7 @@ goalCards.put("/modify", async (req, res) => {
 
 goalCards.delete("/modify", async (req, res) => {
     try {
-        const payload = await deleteCardInfo(req.body);
+        const payload = await deleteCard(req.body);
         if (payload === "error")
             throw "Invalid user id";
         res.status(200).json(respondPayload(payload));

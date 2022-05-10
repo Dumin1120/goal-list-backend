@@ -22,9 +22,10 @@ const getOneTask = async (taskObj) => {
 
 const createTask = async (taskObj) => {
     try {
+        const { uid } = taskObj;
         const query = createTaskQuery(taskObj);
         const response = await db.one(query.str, query.values);
-        const data = await updateCardFromTasks(response);
+        const data = await updateCardFromTasks(uid, response);
         if (data === "error") throw "error";
         return response;
     } catch (err) {
@@ -34,9 +35,10 @@ const createTask = async (taskObj) => {
 
 const updateTasks = async (taskArrOrObj) => {
     try {
+        const { uid } = Array.isArray(taskArrOrObj) ? taskArrOrObj[0] : taskArrOrObj;
         const query = updateTasksQuery(taskArrOrObj);
         const response = await db.many(query.str, query.values);
-        const data = await updateCardFromTasks(response[0]);
+        const data = await updateCardFromTasks(uid, response[0]);
         if (data === "error") throw "error";
         return response;
     } catch (err) {
@@ -46,10 +48,11 @@ const updateTasks = async (taskArrOrObj) => {
 
 const deleteTasks = async (taskObj, reqCardUpdate = true) => {
     try {
+        const { uid } = taskObj;
         const query = deleteTasksQuery(taskObj);
         const response = await db.any(query.str, query.values);
         if (reqCardUpdate) {
-            const data = await updateCardFromTasks(response[0]);
+            const data = await updateCardFromTasks(uid, response[0]);
             if (data === "error") throw "error";
         }
         return response;
@@ -58,9 +61,9 @@ const deleteTasks = async (taskObj, reqCardUpdate = true) => {
     }
 }
 
-const updateCardFromTasks = async (taskResObj) => {
+const updateCardFromTasks = async (uid, taskResObj) => {
     try {
-        const { card_id, uid } = taskResObj;
+        const { card_id } = taskResObj;
         const data = await getAllTasks({ card_id, uid });
         if (data === "error") throw "error";
         const query = updateCardFromTasksQuery(card_id, uid, data);

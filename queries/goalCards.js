@@ -1,8 +1,9 @@
 const db = require("../db/dbconfig");
 const { getAllCardsQuery, getCardQuery, createCardQuery, updateCardQuery, deleteCardQuery } = require("../helpers/buildGoalCardsQueries");
+const { updateTasksFromCardQuery } = require("../helpers/buildTasksQueries");
 const { deleteTasks } = require("./tasks");
 
-const getAllCardsInfo = async (cardObj) => {
+const getAllCards = async (cardObj) => {
     try {
         const query = getAllCardsQuery(cardObj);
         return await db.any(query.str, query.values);
@@ -11,7 +12,7 @@ const getAllCardsInfo = async (cardObj) => {
     }
 }
 
-const getCardInfo = async (cardObj) => {
+const getCard = async (cardObj) => {
     try {
         const query = getCardQuery(cardObj);
         return await db.one(query.str, query.values);
@@ -20,7 +21,7 @@ const getCardInfo = async (cardObj) => {
     }
 }
 
-const createCardInfo = async (cardObj) => {
+const createCard = async (cardObj) => {
     try {
         const query = createCardQuery(cardObj);
         return await db.one(query.str, query.values);
@@ -29,16 +30,21 @@ const createCardInfo = async (cardObj) => {
     }
 }
 
-const updateCardInfo = async (cardObj) => {
+const updateCard = async (cardObj) => {
     try {
+        const { uid } = cardObj;
         const query = updateCardQuery(cardObj);
-        return await db.one(query.str, query.values);
+        const response = await db.one(query.str, query.values);
+        if (cardObj.card_name) {
+            await updateTasksFromCard(uid, response);
+        }
+        return response;
     } catch (err) {
         return "error";
     }
 }
 
-const deleteCardInfo = async (cardObj) => {
+const deleteCard = async (cardObj) => {
     try {
         const { uid, id } = cardObj;
         await deleteTasks({ uid, card_id: id }, false);
@@ -49,10 +55,19 @@ const deleteCardInfo = async (cardObj) => {
     }
 }
 
+const updateTasksFromCard = async (uid, cardResObj) => {
+    try {
+        const query = updateTasksFromCardQuery(uid, cardResObj);
+        return await db.any(query.str, query.values);
+    } catch (err) {
+        return "error";
+    }
+}
+
 module.exports = {
-    getAllCardsInfo,
-    getCardInfo,
-    createCardInfo,
-    updateCardInfo,
-    deleteCardInfo
+    getAllCards,
+    getCard,
+    createCard,
+    updateCard,
+    deleteCard
 };

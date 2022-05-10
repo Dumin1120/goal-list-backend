@@ -4,15 +4,21 @@ CREATE DATABASE goal_list_dev;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    uid TEXT,
-    name TEXT,
+    uid TEXT NOT NULL,
+    name TEXT NOT NULL,
     dark_mode BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE goal_cards (
     id SERIAL PRIMARY KEY,
-    uid TEXT,
-    card_name TEXT,
+    uid TEXT NOT NULL,
+    card_name TEXT NOT NULL,
+    share BOOLEAN DEFAULT FALSE,
+    share_edit BOOLEAN DEFAULT FALSE,
+    share_key TEXT NOT NULL,
+    position INTEGER,
+    tasks_completed INTEGER DEFAULT 0,
+    tasks_total INTEGER DEFAULT 0,
     task_1 TEXT DEFAULT '',
     task_1_completed BOOLEAN DEFAULT FALSE,
     task_2 TEXT DEFAULT '',
@@ -22,17 +28,19 @@ CREATE TABLE goal_cards (
     task_4 TEXT DEFAULT '',
     task_4_completed BOOLEAN DEFAULT FALSE,
     task_5 TEXT DEFAULT '',
-    task_5_completed BOOLEAN DEFAULT FALSE,
-    tasks_completed INTEGER DEFAULT 0,
-    tasks_total INTEGER DEFAULT 0
+    task_5_completed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    uid TEXT,
-    task TEXT,
+    uid TEXT NOT NULL,
+    task TEXT NOT NULL,
     completed BOOLEAN DEFAULT FALSE,
     position INTEGER,
-    card_id INTEGER REFERENCES goal_cards (id)
+    share BOOLEAN DEFAULT FALSE,
+    share_edit BOOLEAN DEFAULT FALSE,
+    share_key TEXT NOT NULL,
+    card_name TEXT NOT NULL,
+    card_id INTEGER NOT NULL REFERENCES goal_cards (id)
     ON DELETE CASCADE
 );

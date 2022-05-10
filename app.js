@@ -4,6 +4,8 @@ const express = require("express");
 const usersController = require("./controllers/usersController");
 const goalCardsController = require("./controllers/goalCardsController");
 const tasksController = require("./controllers/tasksController");
+const shareCardsController = require("./controllers/shareCardsController");
+const shareTasksController = require("./controllers/shareTasksController");
 
 // CONFIGURATION
 const app = express();
@@ -20,6 +22,8 @@ app.get("/", (req, res) => {
 app.use("/users", usersController);
 app.use("/goalcards", goalCardsController);
 app.use("/tasks", tasksController);
+app.use("/share/card", shareCardsController);
+app.use("/share/tasks", shareTasksController);
 
 // 404 Page
 app.get("*", (req, res) => {
