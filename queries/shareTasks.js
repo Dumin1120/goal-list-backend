@@ -1,6 +1,7 @@
 const db = require("../db/dbconfig");
-const { getShareTasksQuery, updateShareTasksQuery, deleteShareTaskQuery } = require("../helpers/buildShareTasksQueries");
+const { getShareTasksQuery, getShareTasksUserCardQuery, updateShareTasksQuery, deleteShareTaskQuery } = require("../helpers/buildShareTasksQueries");
 const { updateShareCardFromTasksQuery } = require("../helpers/buildShareCardQueries");
+const { createTask } = require("./tasks");
 
 const getShareTasks = async (taskObj) => {
     try {
@@ -11,18 +12,16 @@ const getShareTasks = async (taskObj) => {
     }
 }
 
-/*const createShareTask = async (taskObj) => {
+const createShareTask = async (taskObj) => {
     try {
-        const { uid } = taskObj;
-        const query = createTaskQuery(taskObj);
-        const response = await db.one(query.str, query.values);
-        const data = await updateCardFromTasks(uid, response);
-        if (data === "error") throw "error";
-        return response;
+        const { share_key } = taskObj;
+        const query = getShareTasksUserCardQuery(share_key);
+        const ownerCard = await db.one(query.str, query.values)
+        return createTask({ ...taskObj, ...ownerCard, card_id: ownerCard.id });
     } catch (err) {
         return "error";
     }
-}*/
+}
 
 const updateShareTasks = async (taskArrOrObj) => {
     try {
@@ -65,6 +64,7 @@ const updateShareCardFromTasks = async (share_key) => {
 
 module.exports = {
     getShareTasks,
+    createShareTask,
     updateShareTasks,
     deleteShareTask
 };

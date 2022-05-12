@@ -1,11 +1,11 @@
 const shareTasks = require("express").Router();
-const { getShareTasks, updateShareTasks, deleteShareTask } = require("../queries/shareTasks");
+const { getShareTasks, createShareTask, updateShareTasks, deleteShareTask } = require("../queries/shareTasks");
 const { respondPayload, respondError, respondInvalidRequest } = require("../helpers/responses");
 
 shareTasks.get("/:share_key", async (req, res) => {
     try {
         const { share_key } = req.params;
-        const payload = await getShareTasks(share_key);
+        const payload = await getShareTasks({ share_key });
         if (payload === "error")
             throw "This goal card is private.";
         res.status(200).json(respondPayload(payload));
@@ -14,7 +14,7 @@ shareTasks.get("/:share_key", async (req, res) => {
     }
 })
 
-/*shareTasks.post("/:share_key", async (req, res) => {
+shareTasks.post("/", async (req, res) => {
     try {
         const payload = await createShareTask(req.body);
         if (payload === "error")
@@ -23,12 +23,11 @@ shareTasks.get("/:share_key", async (req, res) => {
     } catch (err) {
         res.status(400).json(respondError(err));
     }
-});*/
+})
 
-shareTasks.put("/:share_key", async (req, res) => {
+shareTasks.put("/", async (req, res) => {
     try {
-        const { share_key } = req.params;
-        const payload = await updateShareTasks(share_key);
+        const payload = await updateShareTasks(req.body);
         if (payload === "error")
             throw "Access denied.";
         res.status(200).json(respondPayload(payload));
@@ -37,10 +36,9 @@ shareTasks.put("/:share_key", async (req, res) => {
     }
 });
 
-shareTasks.delete("/:share_key", async (req, res) => {
+shareTasks.delete("/", async (req, res) => {
     try {
-        const { share_key } = req.params;
-        const payload = await deleteShareTask(share_key);
+        const payload = await deleteShareTask(req.body);
         if (payload === "error")
             throw "Access denied.";
         res.status(200).json(respondPayload(payload));

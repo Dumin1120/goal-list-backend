@@ -32,10 +32,10 @@ const createCard = async (cardObj) => {
 
 const updateCard = async (cardObj) => {
     try {
-        const { uid } = cardObj;
+        const { uid, card_name, share, share_edit } = cardObj;
         const query = updateCardQuery(cardObj);
         const response = await db.one(query.str, query.values);
-        if (cardObj.card_name) {
+        if (card_name || share !== undefined || share_edit !== undefined) {
             await updateTasksFromCard(uid, response);
         }
         return response;

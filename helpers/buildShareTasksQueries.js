@@ -5,24 +5,20 @@ const getShareTasksQuery = (taskObj) => {
     const str = `
         SELECT ${tasksColumnsStr} FROM tasks
         WHERE share=TRUE AND share_key=$1
-        ORDER BY position ASC
+        ORDER BY id ASC
         `;
     const values = share_key;
     return { str, values };
 }
 
-/*const createShareTaskQuery = (taskObj) => {
-    const { card_id, card_name, task, position, share_key } = taskObj;
+const getShareTasksUserCardQuery = (share_key) => {
     const str = `
-        INSERT INTO tasks
-        ( uid, card_id, card_name, task, position, share_key )
-        VALUES
-        ( $1, $2, $3, $4, $5, $6 )
-        RETURNING ${tasksColumnsStr}
+        SELECT id, card_name, share, share_edit, share_key, uid FROM goal_cards
+        WHERE share_key=$1 AND share=TRUE AND share_edit=TRUE
         `;
-    const values = [uid, card_id, card_name, task, position, share_key];
+    const values = share_key;
     return { str, values };
-}*/
+}
 
 const updateShareTasksQuery = (taskArrOrObj) => {
     const keyArr = [];
@@ -96,6 +92,7 @@ const deleteShareTaskQuery = (taskObj) => {
 
 module.exports = {
     getShareTasksQuery,
+    getShareTasksUserCardQuery,
     updateShareTasksQuery,
     updateShareTasksFromCardQuery,
     deleteShareTaskQuery

@@ -22,15 +22,15 @@ const getOneTaskQuery = (taskObj) => {
 }
 
 const createTaskQuery = (taskObj) => {
-    const { uid, card_id, card_name, task, position, share_key } = taskObj;
+    const { uid, card_id, card_name, task, position, share, share_edit, share_key } = taskObj;
     const str = `
         INSERT INTO tasks
-        ( uid, card_id, card_name, task, position, share_key )
+        ( uid, card_id, card_name, task, position, share, share_edit, share_key )
         VALUES
-        ( $1, $2, $3, $4, $5, $6 )
+        ( $1, $2, $3, $4, $5, $6, $7, $8 )
         RETURNING ${tasksColumnsStr}
         `;
-    const values = [uid, card_id, card_name, task, position, share_key];
+    const values = [uid, card_id, card_name, task, position, share || false, share_edit || false, share_key];
     return { str, values };
 }
 
@@ -82,14 +82,14 @@ const updateTasksQuery = (taskArrOrObj) => {
 }
 
 const updateTasksFromCardQuery = (uid, cardResObj) => {
-    const { id, card_name } = cardResObj;
+    const { id, card_name, share, share_edit } = cardResObj;
     const str = `
         UPDATE tasks SET
-        card_name=$1
-        WHERE uid=$2 AND card_id=$3
+        card_name=$1, share=$2, share_edit=$3
+        WHERE uid=$4 AND card_id=$5
         RETURNING ${tasksColumnsStr}
         `;
-    const values = [card_name, uid, id];
+    const values = [card_name, share, share_edit, uid, id];
     return { str, values };
 }
 
